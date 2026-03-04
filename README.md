@@ -40,7 +40,7 @@ Test all API endpoints using the Postman collection:
 
 ```bash
 git clone <repo-url>
-cd saraha-app
+cd Restful-Authentication-API
 ```
 
 2. Install dependencies for both backend and frontend
