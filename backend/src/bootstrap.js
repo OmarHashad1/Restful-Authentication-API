@@ -7,6 +7,7 @@ import { userModel } from "./models/user/user.model.js";
 import cors from "cors";
 import { tokenModel } from "./models/token/token.model.js";
 import { logger } from "./utils/winston.js";
+import { requestedAt } from "./middlewares/requestedAt.middleware.js";
 export const bootstrap = async () => {
   const app = express();
 
@@ -16,8 +17,26 @@ export const bootstrap = async () => {
 
   app.use(express.json());
   app.use(cors());
+  app.use(requestedAt);
   app.use("/user", userRouter);
   app.use("/auth", authRouter);
+
+  app.all("{/*dummy}", (req, res, next) => {
+    logger.warn(`Route not found: [${req.method}] ${req.url}`);
+    throw new Error(`page ${req.url} with method ${req.method} not found`);
+  });
+
+  app.use((err, req, res, next) => {
+    if (err) {
+      logger.error(`[${req.method}] ${req.url} - ${err.message}`, {
+        stack: err.stack,
+      });
+      res.status(err.cause?.status || 500).json({
+        status: err.cause?.status || 500,
+        message: err.message,
+      });
+    }
+  });
 
   app.listen(PORT, () => logger.info(`Server listening on port ${PORT}`));
 };

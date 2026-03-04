@@ -46,7 +46,7 @@ export const signup = async ({
   });
 
   if (!user) throw new Error("Something wrong in creating user");
-  sendMail({ email: user.email, fullName: user.firstName });
+  //sendMail({ email: user.email, fullName: user.firstName });
   return user;
 };
 

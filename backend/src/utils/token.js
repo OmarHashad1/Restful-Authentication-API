@@ -98,6 +98,7 @@ export const verifyToken = ({
 export const decodeToken = async ({ token, tokenType = "access" }) => {
   try {
     const decodedUser = jwt.decode(token);
+    if (!decodedUser) throw new Error("Invalid token");
     const payload = verifyToken({ token, role: decodedUser.role, tokenType });
     const userId = tokenType === "refresh" ? payload.payload._id : payload._id;
     const user = await findOne({

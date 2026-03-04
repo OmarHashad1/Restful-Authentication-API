@@ -4,10 +4,10 @@ import { logger } from "../utils/winston.js";
 
 export const auth = async (req, res, next) => {
   try {
-    const [start, token] = req.headers.authorization?.split(" ");
-    if (!start == process.env.TOKEN_CARRY) {
+    const [carry, token] = req.headers.authorization?.split(" ");
+    if (!carry == process.env.TOKEN_CARRY) {
       logger.warn(
-        `Authorization failed: invalid token carry : ${start} from ${req.originalUrl}`,
+        `Authorization failed: invalid token carry : ${carry} from ${req.originalUrl}`,
       );
       errorRes({ res, message: "Invalid token carry" });
     }

@@ -2,6 +2,14 @@
 
 A production-ready REST API featuring a complete authentication system built with Node.js, Express, and MongoDB.
 
+## Postman Collection
+
+Test all API endpoints using the Postman collection:
+
+[Open in Postman](https://orange-sunset-814265-0106.postman.co/workspace/d~69e99eb5-8f28-449c-99fa-07cebf415a52/collection/45541974-dc6a69c4-f78c-41fa-bc67-358fcecd6420?action=share&creator=45541974&active-environment=45541974-c8a76f32-e7cb-41d1-afc7-a7bddfd664f6)
+
+---
+
 ## Features
 
 - JWT authentication (access + refresh tokens)

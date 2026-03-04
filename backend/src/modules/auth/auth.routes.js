@@ -62,9 +62,7 @@ authRouter.post("/login", validate(loginSchema), async (req, res) => {
       data: payload,
       status: 200,
     });
-    logger.info(
-      `User logged in: (${email}) `,
-    );
+    logger.info(`User logged in: (${email}) `);
   } catch (err) {
     logger.error(`Login failed for ${email} : ${err.message}`, {
       stack: err.stack,
@@ -75,7 +73,13 @@ authRouter.post("/login", validate(loginSchema), async (req, res) => {
 
 authRouter.get("/refresh-token", async (req, res) => {
   try {
-    const { authorization: refreshToken } = req.headers;
+    const [carry, refreshToken] = req.headers.authorization?.split(" ");
+    if (!carry == process.env.TOKEN_CARRY) {
+      logger.warn(
+        `Authorization failed: invalid token carry : ${carry} from ${req.originalUrl}`,
+      );
+      throw new Error("Invalid token carry");
+    }
     const payload = await authService.generateRefreshToken({ refreshToken });
     logger.info(`Access token refreshed successfully`);
     successRes({
@@ -118,10 +122,15 @@ authRouter.post(
         throw new Error("New password is the same as the old one ");
       const { _id, firstName, lastName, email } = req.user;
       await authService.changePassword({ _id, oldPassword, newPassword });
-      logger.info(`Password changed successfully for ${firstName} ${lastName} (${email}) (${_id})`);
+      logger.info(
+        `Password changed successfully for ${firstName} ${lastName} (${email}) (${_id})`,
+      );
       successRes({ res, message: "Password changed successfully" });
     } catch (err) {
-      logger.error(`Password change failed for user (${req.user?._id}): ${err.message}`, { stack: err.stack });
+      logger.error(
+        `Password change failed for user (${req.user?._id}): ${err.message}`,
+        { stack: err.stack },
+      );
       errorRes({ res, message: err.message });
     }
   },
@@ -129,8 +138,13 @@ authRouter.post(
 
 authRouter.get("/logout", async (req, res) => {
   try {
-    const { authorization } = req.headers;
-    if (!authorization) throw new Error("Token is required");
+    const [carry, authorization] = req.headers.authorization?.split(" ");
+    if (!carry == process.env.TOKEN_CARRY) {
+      logger.warn(
+        `Authorization failed: invalid token carry : ${carry} from ${req.originalUrl}`,
+      );
+      throw new Error("Invalid token carry");
+    }
     await authService.logout({ authorization });
     logger.info(`User logged out successfully`);
     successRes({ res, message: "Logged out successfully" });
